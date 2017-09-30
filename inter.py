@@ -36,21 +36,28 @@ funcion=re.compile("(([A-z]+_*[A-z]*)\((([A-z]+_*[A-z]*)|(-[0-9]+|[0-9]+|[0-9]+\
 
 
 ###########################MAIN###################
-def procesar_fn(linea,dic):
+def guardar_fn(linea,dic):
 	nombre=linea.strip("{").split(" ")[1]
 	tipo_input=linea.strip.split("(")[1].split(")")[0].split(":")[1]
 	tipo_output=linea.strip("{").split(" ")[5]
 	dic[nombre][0]=tipo_input
 	dic[nombre][1]=tipo_output
 	dic[nombre][2]=[]
-	while !(re.comple(ret,linea)):
-		dic[nombre][2].append(texto.next())
+	for linea in texto:
+		dic[nombre][2].append(linea)
+		if re.match(ret,linea):
+			break
+	return 1
+def asignar(linea,dic):
+	
+
 
 
 texto = open("codigorust.txt", 'r')
 main_var={}
-for linea in texto:
-	if re.match(funcioninit, linea):
+	
+
+
 
 
 
@@ -58,3 +65,4 @@ for linea in texto:
 
 
 texto.close()
+
