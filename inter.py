@@ -20,8 +20,8 @@ ctrl_else = re.compile('\s*} else {')
 fin = re.compile('\s*}')
 ctrl_while = re.compile('\s*while ([A-z]+_*[A-z]*) (>|<|=|<=|>=) (([A-z]+_*[A-z]*)|(-[0-9]+|[0-9]+|[0-9]+\.[0-9]+|-[0-9]+\.[0-9]+)) {')
 boolean = re.compile('(\s*[A-z]+_*[A-z]*) (>|<|=|<=|>=) (([A-z]+_*[A-z]*)|(-[0-9]+|[0-9]+|[0-9]+\.[0-9]+|-[0-9]+\.[0-9]+))')
-printeo = re.compile('\s*println!\(([A-z]+_*[A-z]*)\);') 
-funcioninit = re.compile('fn ([A-z]+_*[A-z]*) \(([A-z]+_*[A-z]*):(i16|i32|f64)\) - > (i16|i32|f64) {')
+printeo = re.compile('\s*println! \(([A-z]+_*[A-z]*)\);') 
+funcioninit = re.compile('fn ([A-z]+_*[A-z]*)\(([A-z]+_*[A-z]*): (i16|i32|f64)\) - > (i16|i32|f64){')
 ret = re.compile('\s*return (([A-z]+_*[A-z]*)|(([A-z]+_*[A-z]*)|(-[0-9]+|[0-9]+|[0-9]+\.[0-9]+|-[0-9]+\.[0-9]+)|\( ([A-z]+_*[A-z]*) as (i16|i32|f64) \)) (\+|\-) (([A-z]+_*[A-z]*)|(-[0-9]+|[0-9]+|[0-9]+\.[0-9]+|-[0-9]+\.[0-9]+)|\( ([A-z]+_*[A-z]*) as (i16|i32|f64) \))|(-[0-9]+|[0-9]+|[0-9]+\.[0-9]+|-[0-9]+\.[0-9]+));')
 fun_main =re.compile('fn main\(\) {')
 funcion=re.compile("(([A-z]+_*[A-z]*)\((([A-z]+_*[A-z]*)|(-[0-9]+|[0-9]+|[0-9]+\.[0-9]+|-[0-9]+\.[0-9]+))\))")
@@ -59,32 +59,62 @@ def guardar_fn(linea,dic):
 		if re.match(ret,linea):
 			break
 	return 1
+
 def castear(linea,dic):
 	nombre=re.match(casteo,linea).group(1)
 	tipo=re.match(casteo,linea).group(2)
 	dic[nombre][1]=tipo
 	return
+
 def operar(linea):
+	suma = 0
 	operando1= re.match(operacion,linea).group(1)
 	operando2= re.match(operacion,linea).group(3)
 	operacion= re.match(operacion,linea).group(2)
 	if dic[operando1][1] != dic[operando2][1]:
 		print 'Error de tipo'
 		exit(1)
-	if operacion == '+':
+	if operacion == '+': #ver en caso de que sen 3 variables en vez de 2
+		suma = operando1 + operando2
+	else:
+		suma = operando1  - operando2
+	return suma
 
+def mostrar(linea):
 
-
+	variable = re.match(printeo,linea).group(1)
+	print 'El valor es: ' + str(variable)
+	print '. Su tipo es:' + str(type(variable)) #reemplazar type(variable) por el tipo de la variable que esta en el dic
 	
+def variab(linea, dic):
+	variable = re.match(declaracion,linea).group(1)
+	print variable
+	tipo =re.match(declaracion,linea).group(2)
+	valor = re.match(declaracion,linea).group(3)
+	dic[variable]=[]
+	dic[variable].append(tipo)
+	dic[variable].append(valor)
+	return 1
 
 
-
-texto = open("codigorust.txt", 'r')
-main_var={}
+texto = open("codigo_rust.txt", 'r')
+main_var={} #{'nombrefuncion':[tipo input, tipo output, [codigo]] de las funciones antes que el main
+main = {} #variables del main {'variable':[tipo, valor]}
 for linea in texto:
 	if re.match(funcioninit,linea):
-		guardar_fn(linea,main_var)
+		guardar_fn(linea,main_var) #[tipo input, tipo output, [codigo]]
+	if re.match(printeo,linea):
+		mostrar(linea)
+
+	if re.match(declaracion,linea):
+		variab(linea,main)
+	if re.match(boolean,linea):
+
+
+
+
 print main_var
+print main
 	
 
 
